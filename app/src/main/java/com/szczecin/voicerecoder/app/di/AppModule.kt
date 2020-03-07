@@ -38,5 +38,4 @@ class AppModule {
     @Provides
     fun provideVoiceRecorderStorage(voiceRecorderDao: VoiceRecorderDao): VoiceRecorderStorage =
         VoiceRecorderStorage(voiceRecorderDao)
-
 }

@@ -67,4 +67,12 @@ ext {
             roomCompiler:               "androidx.room:room-compiler:${roomVersion}",
             roomRxJava:                 "androidx.room:room-rxjava2:${roomVersion}"
     ]
+
+    testDependencies = [
+            jUnit:              "junit:junit:${jUnitVersion}",
+            lifecycleTest:      "androidx.arch.core:core-testing:${lifecycleVersion}",
+            mockitoKotlin:      "com.nhaarman.mockitokotlin2:mockito-kotlin:${mockitoKotlinVersion}",
+            json:               "org.json:json:${jsonVersion}"
+    ]
+
 }

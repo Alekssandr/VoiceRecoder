@@ -8,5 +8,4 @@ interface VoiceRecorderRepository {
     fun insert(voiceRecorder: VoiceRecorder): Completable
     fun getAll(): Single<List<VoiceRecorder>>
     fun deleteById(voiceRecorderId: Int): Completable
-
 }

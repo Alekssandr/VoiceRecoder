@@ -36,7 +36,7 @@ class VoiceRecorderViewModel @Inject constructor(
             })
     }
 
-    //TODO change body of func later
+    // TODO change body of func later
     fun openRecordings() {
         disposables += voiceRecorderGetListUseCase
             .execute()
