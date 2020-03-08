@@ -2,11 +2,12 @@ package com.szczecin.voicerecoder.app.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.szczecin.voicerecoder.app.common.rx.RxSchedulers
-import com.szczecin.voicerecoder.domain.model.VoiceRecorder
-import com.szczecin.voicerecoder.domain.usecase.VoiceRecorderGetListUseCase
-import com.szczecin.voicerecoder.domain.usecase.VoiceRecorderInsertUseCase
+import com.szczecin.voicerecoder.app.utils.Recording
+import com.szczecin.voicerecoder.domain.usecase.VoiceRecorderStartUseCase
+import com.szczecin.voicerecoder.domain.usecase.VoiceRecorderStopUseCase
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
@@ -14,39 +15,64 @@ import javax.inject.Inject
 
 class VoiceRecorderViewModel @Inject constructor(
     private val schedulers: RxSchedulers,
-    private val voiceRecorderInsertUseCase: VoiceRecorderInsertUseCase,
-    private val voiceRecorderGetListUseCase: VoiceRecorderGetListUseCase
+    private val voiceRecorderStartUseCase: VoiceRecorderStartUseCase,
+    private val voiceRecorderStopUseCase: VoiceRecorderStopUseCase
 ) : ViewModel(), LifecycleObserver {
 
     private val disposables = CompositeDisposable()
+    val recordBtn = MutableLiveData<Boolean>()
+    val eventOpenRecordings = MutableLiveData<Unit>()
+    private val recording = MutableLiveData<Recording>().apply { value = Recording.Permission }
 
-    fun record() {
-        insert(VoiceRecorder(1, "test2", "3"))
+    fun recordButtonClick() {
+        checkRecordingStatus()
     }
 
-    private fun insert(voiceRecorder: VoiceRecorder) {
-        disposables += voiceRecorderInsertUseCase
-            .execute(voiceRecorder)
-            .subscribeOn(schedulers.io())
-            .observeOn(schedulers.mainThread())
-            .subscribeBy(onComplete = {
-                Log.d("Record", "insert onComplete")
-            }, onError = {
-                Log.e("Record", "insert onError: ${it.message}")
-            })
+    private fun checkRecordingStatus() {
+        when (recording.value) {
+            is Recording.Permission -> recordBtn.value = true
+            is Recording.PermissionAccept -> recording()
+            is Recording.StartRecording -> stopRecording()
+            is Recording.StopRecording -> recording()
+        }
     }
 
-    // TODO change body of func later
-    fun openRecordings() {
-        disposables += voiceRecorderGetListUseCase
+    private fun stopRecording() {
+        disposables += voiceRecorderStopUseCase
             .execute()
             .subscribeOn(schedulers.io())
             .observeOn(schedulers.mainThread())
-            .subscribeBy(onSuccess = {
-                Log.d("Record", "openRecordings list $it")
+            .subscribeBy(onComplete = {
+                recording.value = Recording.StopRecording
+                Log.d("Recording", "stop recording")
             }, onError = {
-                Log.e("Record", "openRecordings onError: ${it.message}")
+                Log.e("Recording", "insert onError: ${it.message}")
             })
+    }
+
+    private fun recording() {
+        disposables += voiceRecorderStartUseCase
+            .execute()
+            .subscribeOn(schedulers.io())
+            .observeOn(schedulers.mainThread())
+            .subscribeBy(onComplete = {
+                recording.value = Recording.StartRecording
+                Log.d("Recording", "start recording")
+            }, onError = {
+                Log.e("Recording", "insert onError: ${it.message}")
+            })
+    }
+
+    fun permissionAccepted() {
+        recording.value = Recording.PermissionAccept
+        checkRecordingStatus()
+    }
+
+    fun openRecordings() {
+        if (recording.value != Recording.StopRecording) {
+            stopRecording()
+        }
+        eventOpenRecordings.value = Unit
     }
 
     override fun onCleared() {
