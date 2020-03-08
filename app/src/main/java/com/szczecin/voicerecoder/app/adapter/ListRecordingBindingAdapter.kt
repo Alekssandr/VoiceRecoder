@@ -5,7 +5,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.szczecin.voicerecoder.domain.model.VoiceRecorder
 
 @BindingAdapter("resultsList")
-fun RecyclerView.bindItems(items: List<VoiceRecorder>?) {
+fun RecyclerView.bindItems(items: MutableList<VoiceRecorder>?) {
 
     items?.let { val adapter = adapter as ItemsAdapter
         adapter.update(items) }

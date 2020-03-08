@@ -10,6 +10,7 @@ import com.szczecin.voicerecoder.app.common.rx.RxSchedulers
 import com.szczecin.voicerecoder.domain.model.VoiceRecorder
 import com.szczecin.voicerecoder.domain.usecase.VoiceRecorderListUseCase
 import com.szczecin.voicerecoder.domain.usecase.VoiceRecorderListenUseCase
+import com.szczecin.voicerecoder.domain.usecase.VoiceRecorderRemoveUseCase
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
@@ -19,7 +20,8 @@ import javax.inject.Inject
 class VoiceRecorderListViewModel @Inject constructor(
     private val schedulers: RxSchedulers,
     private val voiceRecorderStartUseCase: VoiceRecorderListUseCase,
-    private val voiceRecorderListenUseCase: VoiceRecorderListenUseCase
+    private val voiceRecorderListenUseCase: VoiceRecorderListenUseCase,
+    private val voiceRecorderRemoveUseCase: VoiceRecorderRemoveUseCase
 
 ) : ViewModel(), LifecycleObserver {
 
@@ -35,7 +37,6 @@ class VoiceRecorderListViewModel @Inject constructor(
             .observeOn(schedulers.mainThread())
             .subscribeBy(onSuccess = {
                 resultsList.value = it
-                Log.d("Recording", "array recording: " + it.size)
             }, onError = {
                 Log.e("Recording", "insert onError: ${it.message}")
             })
@@ -49,13 +50,31 @@ class VoiceRecorderListViewModel @Inject constructor(
                 .subscribe { listenTrack(it) })
     }
 
+    fun subscribeForRemoveItem(clickObserver: Observable<VoiceRecorder>) {
+        viewSubscriptions.add(
+            clickObserver
+                .subscribeOn(schedulers.io())
+                .observeOn(schedulers.mainThread())
+                .subscribe { removeTrack(it) })
+    }
+
+    private fun removeTrack(track: VoiceRecorder) {
+        disposables += voiceRecorderRemoveUseCase
+            .execute(track)
+            .subscribeOn(schedulers.io())
+            .observeOn(schedulers.mainThread())
+            .subscribeBy(onComplete = {
+            }, onError = {
+                Log.e("Recording", "insert onError: ${it.message}")
+            })
+    }
+
     private fun listenTrack(track: String) {
         disposables += voiceRecorderListenUseCase
             .execute(track)
             .subscribeOn(schedulers.io())
             .observeOn(schedulers.mainThread())
             .subscribeBy(onComplete = {
-                Log.d("Recording", "array listenTrack: ")
             }, onError = {
                 Log.e("Recording", "insert onError: ${it.message}")
             })

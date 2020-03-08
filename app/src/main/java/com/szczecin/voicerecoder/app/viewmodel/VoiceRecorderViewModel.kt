@@ -11,6 +11,7 @@ import com.szczecin.voicerecoder.domain.usecase.VoiceRecorderStopUseCase
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class VoiceRecorderViewModel @Inject constructor(
@@ -20,6 +21,7 @@ class VoiceRecorderViewModel @Inject constructor(
 ) : ViewModel(), LifecycleObserver {
 
     private val disposables = CompositeDisposable()
+    val recordBtnPermission = MutableLiveData<Boolean>()
     val recordBtn = MutableLiveData<Boolean>()
     val eventOpenRecordings = MutableLiveData<Unit>()
     private val recording = MutableLiveData<Recording>().apply { value = Recording.Permission }
@@ -30,7 +32,7 @@ class VoiceRecorderViewModel @Inject constructor(
 
     private fun checkRecordingStatus() {
         when (recording.value) {
-            is Recording.Permission -> recordBtn.value = true
+            is Recording.Permission -> recordBtnPermission.value = true
             is Recording.PermissionAccept -> recording()
             is Recording.StartRecording -> stopRecording()
             is Recording.StopRecording -> recording()
@@ -38,26 +40,30 @@ class VoiceRecorderViewModel @Inject constructor(
     }
 
     private fun stopRecording() {
+        recordBtn.value = false
         disposables += voiceRecorderStopUseCase
             .execute()
+            .delay(500, TimeUnit.MILLISECONDS)
             .subscribeOn(schedulers.io())
             .observeOn(schedulers.mainThread())
             .subscribeBy(onComplete = {
                 recording.value = Recording.StopRecording
-                Log.d("Recording", "stop recording")
+                recordBtn.value = true
             }, onError = {
                 Log.e("Recording", "insert onError: ${it.message}")
             })
     }
 
     private fun recording() {
+        recordBtn.value = false
         disposables += voiceRecorderStartUseCase
             .execute()
+            .delay(500, TimeUnit.MILLISECONDS)
             .subscribeOn(schedulers.io())
             .observeOn(schedulers.mainThread())
             .subscribeBy(onComplete = {
                 recording.value = Recording.StartRecording
-                Log.d("Recording", "start recording")
+                recordBtn.value = true
             }, onError = {
                 Log.e("Recording", "insert onError: ${it.message}")
             })

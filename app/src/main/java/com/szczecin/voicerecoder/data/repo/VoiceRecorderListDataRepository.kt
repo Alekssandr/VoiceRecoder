@@ -16,4 +16,6 @@ class VoiceRecorderListDataRepository(
         voiceRecorderListStorage.playRecording(track)
 
     override fun initialize(): Completable = voiceRecorderListStorage.initialize()
+
+    override fun removeItem(voiceRecorder: VoiceRecorder): Completable = voiceRecorderListStorage.removeItem(voiceRecorder)
 }
