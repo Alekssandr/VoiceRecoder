@@ -8,10 +8,10 @@ allprojects {
 
 ext {
     //Android
-    androidBuildToolsVersion = "29.0.0"
+    androidBuildToolsVersion = "28.0.0"
     androidMinSdkVersion = 21
     androidTargetSdkVersion = 28
-    androidCompileSdkVersion = 29
+    androidCompileSdkVersion = 28
 
     //Libraries
     kotlinVersion = '1.3.20'
@@ -26,6 +26,7 @@ ext {
     moshiVersion = '1.6.0'
     coordinatorlayout = '1.1.0'
     roomVersion = '2.0.0-beta01'
+    coroutines =  '1.0.1'
 
 
     googlePlayServicesVersion = '17.0.0'
@@ -65,7 +66,10 @@ ext {
             googleLocation:             "com.google.android.gms:play-services-location:${googlePlayServicesVersion}",
             roomRuntime:                "androidx.room:room-runtime:${roomVersion}",
             roomCompiler:               "androidx.room:room-compiler:${roomVersion}",
-            roomRxJava:                 "androidx.room:room-rxjava2:${roomVersion}"
+            roomRxJava:                 "androidx.room:room-rxjava2:${roomVersion}",
+            coroutinesCore:             "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines",
+            coroutines:                 "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines"
+
     ]
 
     testDependencies = [

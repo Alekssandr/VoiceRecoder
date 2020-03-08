@@ -51,7 +51,12 @@ dependencies {
     implementation appDependencies.livedataext
     implementation appDependencies.googleLocation
     implementation appDependencies.coordinatorlayout
+    implementation appDependencies.coroutinesCore
+    implementation appDependencies.coroutines
     api appDependencies.roomRuntime
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'com.google.android.material:material:1.1.0'
     kapt appDependencies.roomCompiler
     implementation appDependencies.roomRxJava
     kapt appDependencies.daggerCompiler

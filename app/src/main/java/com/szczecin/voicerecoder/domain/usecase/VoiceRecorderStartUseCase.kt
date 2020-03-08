@@ -4,10 +4,10 @@ import com.szczecin.voicerecoder.domain.repo.VoiceRecorderRepository
 import io.reactivex.Completable
 import javax.inject.Inject
 
-class VoiceRecorderDeleteUseCase @Inject constructor(
+class VoiceRecorderStartUseCase @Inject constructor(
     private val voiceRecorderRepository: VoiceRecorderRepository
 ) {
 
-    fun execute(voiceRecorderId: Int): Completable =
-        voiceRecorderRepository.deleteById(voiceRecorderId)
+    fun execute(): Completable =
+        voiceRecorderRepository.startRecording()
 }

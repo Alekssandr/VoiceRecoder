@@ -2,12 +2,10 @@ package com.szczecin.voicerecoder.app.di
 
 import android.app.Application
 import android.content.Context
+import android.media.MediaRecorder
 import com.szczecin.voicerecoder.app.common.rx.RxSchedulers
-import com.szczecin.voicerecoder.data.database.dao.VoiceRecorderDao
-import com.szczecin.voicerecoder.data.database.repo.ProviderDataBase
-import com.szczecin.voicerecoder.data.database.repo.VoiceRecorderDatabase
-import com.szczecin.voicerecoder.data.database.repo.VoiceRecorderRoomDatabase
-import com.szczecin.voicerecoder.data.database.storage.VoiceRecorderStorage
+import com.szczecin.voicerecoder.data.storage.VoiceRecorderListStorage
+import com.szczecin.voicerecoder.data.storage.VoiceRecorderStorage
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -25,17 +23,15 @@ class AppModule {
 
     @Singleton
     @Provides
-    fun provideDatabase(context: Context): VoiceRecorderRoomDatabase = VoiceRecorderDatabase(
-        ProviderDataBase(context)
-    ).build()
+    fun provideMediaRecorder(): MediaRecorder = MediaRecorder()
 
     @Singleton
     @Provides
-    fun provideVoiceRecorderDao(voiceRecorderRoomDatabase: VoiceRecorderRoomDatabase): VoiceRecorderDao =
-        voiceRecorderRoomDatabase.voiceRecorderDao()
+    fun provideVoiceRecorderStorage(): VoiceRecorderStorage =
+        VoiceRecorderStorage()
 
     @Singleton
     @Provides
-    fun provideVoiceRecorderStorage(voiceRecorderDao: VoiceRecorderDao): VoiceRecorderStorage =
-        VoiceRecorderStorage(voiceRecorderDao)
+    fun provideVoiceRecorderListStorage(context: Context): VoiceRecorderListStorage =
+        VoiceRecorderListStorage(context)
 }
