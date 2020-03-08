@@ -12,34 +12,46 @@
 
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <Button
-            android:id="@+id/button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="70dp"
-            android:onClick="@{()->voiceRecorderViewModel.recordButtonClick()}"
-            android:text="Record"
-            binding:layout_constraintEnd_toEndOf="parent"
-            binding:layout_constraintStart_toStartOf="parent"
-            binding:layout_constraintTop_toTopOf="parent" />
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:src="@drawable/ic_recording_microphone"
+                android:visibility="visible"
+                binding:backgroundTint="@color/fabBackground"
+                binding:fabCustomSize="100dp"
+                binding:maxImageSize="50dp"
+                binding:borderWidth="5dp"
+                android:onClick="@{()->voiceRecorderViewModel.recordButtonClick()}"
+                binding:layout_constraintBottom_toBottomOf="parent"
+                binding:layout_constraintEnd_toEndOf="parent"
+                binding:layout_constraintStart_toStartOf="parent"
+                binding:layout_constraintTop_toTopOf="parent" />
 
-        <Button
-            android:id="@+id/button2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="186dp"
-            android:onClick="@{()->voiceRecorderViewModel.openRecordings()}"
-            android:text="@string/btn_show_recordings"
-            binding:layout_constraintEnd_toEndOf="parent"
-            binding:layout_constraintStart_toStartOf="parent"
-            binding:layout_constraintTop_toBottomOf="@+id/button" />
+            <Button
+                android:background="@drawable/button_selector"
+                android:id="@+id/button2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:padding="10dp"
+                android:onClick="@{()->voiceRecorderViewModel.openRecordings()}"
+                android:text="@string/btn_show_recordings"
+                android:textColor="@color/colorWhite"
+                binding:layout_constraintEnd_toEndOf="parent"
+                binding:layout_constraintStart_toStartOf="parent"
+                binding:layout_constraintTop_toBottomOf="@+id/button" />
 
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </layout>

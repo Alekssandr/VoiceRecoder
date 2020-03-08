@@ -16,6 +16,7 @@ import com.szczecin.voicerecoder.app.common.viewModel
 import com.szczecin.voicerecoder.app.viewmodel.VoiceRecorderViewModel
 import com.szczecin.voicerecoder.databinding.ActivityVoiceRecorderBinding
 import dagger.android.AndroidInjection
+import kotlinx.android.synthetic.main.activity_voice_recorder.*
 import javax.inject.Inject
 
 class VoiceRecorderActivity : AppCompatActivity() {
@@ -43,8 +44,11 @@ class VoiceRecorderActivity : AppCompatActivity() {
     }
 
     private fun observeViewModel() {
-        voiceRecorderViewModel.recordBtn.observe(this, Observer {
+        voiceRecorderViewModel.recordBtnPermission.observe(this, Observer {
             checkPermission()
+        })
+        voiceRecorderViewModel.recordBtn.observe(this, Observer {
+            button.isEnabled = it
         })
         voiceRecorderViewModel.eventOpenRecordings.observe(this, Observer {
             val intent = Intent(this, VoiceRecorderListActivity::class.java)
@@ -93,6 +97,9 @@ class VoiceRecorderActivity : AppCompatActivity() {
     ) {
         if (requestCode == PERMISSION_ID) {
             if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+//                Handler().postDelayed(Runnable {
+//                    record()
+//                }, 500)
                 record()
             } else {
                 Snackbar.make(

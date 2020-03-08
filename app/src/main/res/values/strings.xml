@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">VoiceRecoder</string>
+    <string name="app_name">VoiceRecorder</string>
     <string name="btn_show_recordings">Show Recordings</string>
     <string name="permissions_info">For record please accept permissions</string>
     <string name="title_activity_voice_recorder_list">VoiceRecorderListActivity</string>

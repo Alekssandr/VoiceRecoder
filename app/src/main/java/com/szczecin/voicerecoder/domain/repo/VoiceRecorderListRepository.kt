@@ -8,4 +8,5 @@ interface VoiceRecorderListRepository {
     fun getListRecording(): Single<ArrayList<VoiceRecorder>>
     fun playRecording(track: String): Completable
     fun initialize(): Completable
+    fun removeItem(voiceRecorder: VoiceRecorder): Completable
 }

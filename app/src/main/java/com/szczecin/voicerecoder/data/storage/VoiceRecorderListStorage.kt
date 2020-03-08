@@ -23,13 +23,12 @@ class VoiceRecorderListStorage(private val context: Context) {
     fun initialize(): Completable {
         file = ArrayList()
         getRecording()
-        return Completable.fromCallable { true }
+        return Completable.complete()
     }
 
     fun playRecording(title: String): Completable {
         val path =
-            Uri.parse("$mainPath$title")
-
+            Uri.parse("$mainPath${title}.mp3")
         val manager: AudioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
         if (manager.isMusicActive) {
             Toast.makeText(
@@ -45,7 +44,8 @@ class VoiceRecorderListStorage(private val context: Context) {
                 start()
             }
         }
-        return Completable.fromCallable { true }
+
+        return Completable.complete()
     }
 
     private fun getRecording() {
@@ -55,7 +55,7 @@ class VoiceRecorderListStorage(private val context: Context) {
             for (i in files) {
                 println(i.name)
                 val duration = getLength(i.name)
-                file?.add(VoiceRecorder(i.name, duration))
+                file?.add(VoiceRecorder(i.name.removeSuffix(".mp3"), duration))
             }
         }
     }
@@ -63,7 +63,7 @@ class VoiceRecorderListStorage(private val context: Context) {
     private fun getLength(filePath: String): String {
 
         val mediaMetadataRetriever = MediaMetadataRetriever()
-        mediaMetadataRetriever.setDataSource(mainPath + filePath)
+        mediaMetadataRetriever.setDataSource(context, Uri.parse("$mainPath$filePath"))
 
         val duration =
             mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
@@ -76,6 +76,12 @@ class VoiceRecorderListStorage(private val context: Context) {
         val minutes = durationParse / 1000 / 60
         val seconds = durationParse / 1000 % 60
         return String.format("%d:%02d", minutes, seconds)
+    }
+
+    fun removeItem(voiceRecorder: VoiceRecorder): Completable {
+        val itemForRemove = File(mainPath + voiceRecorder.name + ".mp3")
+        itemForRemove.delete()
+        return Completable.complete()
     }
 
     fun getRecordingsList(): Single<ArrayList<VoiceRecorder>> = Single.just(file)
