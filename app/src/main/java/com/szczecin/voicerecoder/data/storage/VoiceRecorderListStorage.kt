@@ -27,8 +27,7 @@ class VoiceRecorderListStorage(private val context: Context) {
     }
 
     fun playRecording(title: String): Completable {
-        val path =
-            Uri.parse("$mainPath${title}.mp3")
+        val path = Uri.parse("$mainPath$title.mp3")
         val manager: AudioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
         if (manager.isMusicActive) {
             Toast.makeText(

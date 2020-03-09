@@ -2,15 +2,16 @@ package com.szczecin.voicerecoder.data.storage
 
 import android.media.MediaRecorder
 import android.os.Environment
+import android.os.FileObserver
 import android.util.Log
 import io.reactivex.Completable
+import io.reactivex.subjects.BehaviorSubject
 import java.io.File
 import java.io.IOException
 
-class VoiceRecorderStorage : MediaRecorder.OnInfoListener {
-    override fun onInfo(mr: MediaRecorder?, what: Int, extra: Int) {
-        val a = what
-    }
+class VoiceRecorderStorage : FileWasWrittenListener {
+
+    private var recordingFinishEvent = BehaviorSubject.create<Boolean>()
 
     private var output: String? = null
     private val mainPath: String =
@@ -18,6 +19,14 @@ class VoiceRecorderStorage : MediaRecorder.OnInfoListener {
     private val directory: File = File(mainPath)
     private var state = false
     private var mediaRecorder: MediaRecorder? = null
+    var fb: FileWasWrittenObserver = FileWasWrittenObserver(
+        mainPath,
+        FileObserver.CLOSE_WRITE
+    )
+
+    init {
+        fb.addListener(this)
+    }
 
     fun startRecording(): Completable {
         mediaRecorder = MediaRecorder().apply {
@@ -43,11 +52,11 @@ class VoiceRecorderStorage : MediaRecorder.OnInfoListener {
                 Log.e("Recording", "prepare() failed")
             }
         }
-
+        fb.startWatching()
         return Completable.complete()
     }
 
-    fun stopRecording(): Completable {
+    fun stopRecording(): BehaviorSubject<Boolean> {
         if (state) {
             mediaRecorder?.apply {
                 stop()
@@ -55,6 +64,28 @@ class VoiceRecorderStorage : MediaRecorder.OnInfoListener {
             }
             mediaRecorder = null
         }
-        return Completable.complete()
+
+        return recordingFinishEvent
     }
+
+    override fun isFinished() {
+        fb.stopWatching()
+        recordingFinishEvent.onNext(true)
+    }
+}
+
+class FileWasWrittenObserver(path: String, mask: Int) : FileObserver(path, mask) {
+    lateinit var fileWasWrittenListener: FileWasWrittenListener
+
+    override fun onEvent(event: Int, path: String?) {
+        fileWasWrittenListener.isFinished()
+    }
+
+    fun addListener(fileWasWrittenListener: FileWasWrittenListener) {
+        this.fileWasWrittenListener = fileWasWrittenListener
+    }
+}
+
+interface FileWasWrittenListener {
+    fun isFinished()
 }

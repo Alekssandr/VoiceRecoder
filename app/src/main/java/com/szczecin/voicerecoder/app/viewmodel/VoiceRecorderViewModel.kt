@@ -23,7 +23,8 @@ class VoiceRecorderViewModel @Inject constructor(
     private val disposables = CompositeDisposable()
     val recordBtnPermission = MutableLiveData<Boolean>()
     val recordBtn = MutableLiveData<Boolean>()
-    val eventOpenRecordings = MutableLiveData<Unit>()
+    val recordStopBtn = MutableLiveData<Boolean>()
+    val eventOpenRecordings = MutableLiveData<Boolean>()
     private val recording = MutableLiveData<Recording>().apply { value = Recording.Permission }
 
     fun recordButtonClick() {
@@ -43,12 +44,12 @@ class VoiceRecorderViewModel @Inject constructor(
         recordBtn.value = false
         disposables += voiceRecorderStopUseCase
             .execute()
-            .delay(500, TimeUnit.MILLISECONDS)
             .subscribeOn(schedulers.io())
             .observeOn(schedulers.mainThread())
-            .subscribeBy(onComplete = {
+            .subscribeBy(onNext = {
                 recording.value = Recording.StopRecording
                 recordBtn.value = true
+                recordStopBtn.value = true
             }, onError = {
                 Log.e("Recording", "insert onError: ${it.message}")
             })
@@ -56,6 +57,8 @@ class VoiceRecorderViewModel @Inject constructor(
 
     private fun recording() {
         recordBtn.value = false
+        recording.value = Recording.StartRecording
+        recordStopBtn.value = false
         disposables += voiceRecorderStartUseCase
             .execute()
             .delay(500, TimeUnit.MILLISECONDS)
@@ -75,10 +78,7 @@ class VoiceRecorderViewModel @Inject constructor(
     }
 
     fun openRecordings() {
-        if (recording.value != Recording.StopRecording) {
-            stopRecording()
-        }
-        eventOpenRecordings.value = Unit
+        eventOpenRecordings.value = recording.value != Recording.StartRecording
     }
 
     override fun onCleared() {

@@ -1,8 +1,8 @@
 package com.szczecin.voicerecoder.app.viewmodel
 
 import android.util.Log
-import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.Lifecycle
@@ -22,7 +22,6 @@ class VoiceRecorderListViewModel @Inject constructor(
     private val voiceRecorderStartUseCase: VoiceRecorderListUseCase,
     private val voiceRecorderListenUseCase: VoiceRecorderListenUseCase,
     private val voiceRecorderRemoveUseCase: VoiceRecorderRemoveUseCase
-
 ) : ViewModel(), LifecycleObserver {
 
     private val disposables = CompositeDisposable()

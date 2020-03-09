@@ -3,4 +3,7 @@
     <string name="btn_show_recordings">Show Recordings</string>
     <string name="permissions_info">For record please accept permissions</string>
     <string name="title_activity_voice_recorder_list">VoiceRecorderListActivity</string>
+    <string name="permissions_record_audio">Please, finish recording audio</string>
+    <string name="start_record_audio">Recording</string>
+    <string name="finish_record_audio">Recording finished</string>
 </resources>

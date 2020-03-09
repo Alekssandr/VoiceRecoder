@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
@@ -49,11 +50,32 @@ class VoiceRecorderActivity : AppCompatActivity() {
         })
         voiceRecorderViewModel.recordBtn.observe(this, Observer {
             button.isEnabled = it
+            changeColor(it, R.color.colorAccentLight)
         })
+        voiceRecorderViewModel.recordStopBtn.observe(this, Observer {
+            changeColor(it, R.color.fabBackground)
+        })
+
         voiceRecorderViewModel.eventOpenRecordings.observe(this, Observer {
-            val intent = Intent(this, VoiceRecorderListActivity::class.java)
-            startActivity(intent)
+            if (it) {
+                val intent = Intent(this, VoiceRecorderListActivity::class.java)
+                startActivity(intent)
+            } else {
+                Snackbar.make(
+                    coordinator_layout,
+                    resources.getText(R.string.permissions_record_audio),
+                    Snackbar.LENGTH_LONG
+                ).show()
+            }
         })
+    }
+
+    private fun changeColor(it: Boolean, fabBackground: Int) {
+        if (it) {
+            button.backgroundTintList = ContextCompat.getColorStateList(
+                applicationContext, fabBackground
+            )
+        }
     }
 
     private fun checkPermission() {

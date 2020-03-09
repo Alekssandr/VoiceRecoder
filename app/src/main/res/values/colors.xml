@@ -10,4 +10,5 @@
     <color name="colorAccentDark">#005cb2</color>
     <color name="colorAccentLight">#6ab7ff</color>
     <color name="colorAccentLightAlpha">#8D6AB7FF</color>
+    <color name="colorRecording">#D81B60</color>
 </resources>
